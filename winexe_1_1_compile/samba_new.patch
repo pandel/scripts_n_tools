@@ -1,0 +1,61 @@
+diff --git a/buildtools/wafsamba/wafsamba.py b/buildtools/wafsamba/wafsamba.py
+index 1e331e5..7dc3240 100644
+--- a/buildtools/wafsamba/wafsamba.py
++++ b/buildtools/wafsamba/wafsamba.py
+@@ -141,7 +141,8 @@ def SAMBA_LIBRARY(bld, libname, source,
+                   grouping_library=False,
+                   allow_undefined_symbols=False,
+                   allow_warnings=False,
+-                  enabled=True):
++                  enabled=True,
++		  winexe=False):
+     '''define a Samba library'''
+ 
+     if pyembed and bld.env['IS_EXTRA_PYTHON']:
+@@ -163,7 +164,7 @@ def SAMBA_LIBRARY(bld, libname, source,
+         source = bld.SUBDIR(subdir, source)
+ 
+     # remember empty libraries, so we can strip the dependencies
+-    if ((source == '') or (source == [])):
++    if ((source == '') or (source == [])) and not winexe:
+         if deps == '' and public_deps == '':
+             SET_TARGET_TYPE(bld, libname, 'EMPTY')
+             return
+@@ -574,7 +575,8 @@ def SAMBA_SUBSYSTEM(bld, modname, source,
+                     hide_symbols=False,
+                     allow_warnings=False,
+                     pyext=False,
+-                    pyembed=False):
++                    pyembed=False,
++		    winexe=False):
+     '''define a Samba subsystem'''
+ 
+     if not enabled:
+@@ -582,7 +584,7 @@ def SAMBA_SUBSYSTEM(bld, modname, source,
+         return
+ 
+     # remember empty subsystems, so we can strip the dependencies
+-    if ((source == '') or (source == [])):
++    if ((source == '') or (source == [])) and not winexe:
+         if deps == '' and public_deps == '':
+             SET_TARGET_TYPE(bld, modname, 'EMPTY')
+             return
+diff --git a/nsswitch/wins.c b/nsswitch/wins.c
+index 19d3c5b..4fe4b6a 100644
+--- a/nsswitch/wins.c
++++ b/nsswitch/wins.c
+@@ -18,6 +18,14 @@
+ 
+ */
+ 
++#if !defined(NETDB_INTERNAL)
++#  define NETDB_INTERNAL (-1)
++#endif
++#if !defined(NETDB_SUCCESS)
++#  define NETDB_SUCCESS (0)
++#endif
++
++
+ #include "includes.h"
+ #include "nsswitch/winbind_nss.h"
+ #include "nsswitch/libwbclient/wbclient.h"
