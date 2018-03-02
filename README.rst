@@ -11,3 +11,8 @@ Uses:
 
 - Samba:  Git clone from 2017-02-26
 - Winexe: see Github repository sogaani/winexe
+
+opsi_4_0_7_bananapi_depot
+-------------------------
+
+Little helpers for installation of Armbian + opsi on old BananaPIs
